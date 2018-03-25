@@ -25,6 +25,8 @@ func directoryContents(directoryName string) (results []string) {
 
 			results = append(results, filePath)
 			results = append(results, directoryContents(filePath)...)
+		} else {
+			results = append(results, directoryName + "/" + file.Name())
 		}
 	}
 
@@ -40,8 +42,8 @@ func directoryContentsHierarchy(directoryName string) (results []DirectoryStruct
 
 	for _, file := range files {
 		if file.IsDir() {
-			filePath := directoryName + "/" + file.Name() + "/"
-			results = append(results, DirectoryStructure{file.Name(), filePath, strings.Replace(filePath, "pages/", "", 0), directoryContentsHierarchy(filePath)})
+			filePath := strings.Replace(directoryName + "/" + file.Name() + "/", "//", "/", -1)
+			results = append(results, DirectoryStructure{file.Name(), filePath, strings.Replace(filePath, "pages/", "", -1), directoryContentsHierarchy(filePath)})
 		}
 	}
 

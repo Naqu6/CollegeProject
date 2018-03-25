@@ -9,6 +9,7 @@ const BASE_TEMPLATE = "template"
 
 const JS_CONTEXT = "text/javascript"
 const CSS_CONTEXT = "text/css"
+const IMAGE_CONTEXT = "image/jpeg"
 
 const HTML_EXTENSION = "html"
 const JS_EXTENSION = "js"

@@ -1,4 +1,4 @@
-package main
+package main 
 
 import (
 	"api"
@@ -30,6 +30,12 @@ var Static map[string]StaticResource
 func init() {
 	Static = getStaticResources()
 
+	if Static == nil {
+		Static = make(map[string]StaticResource)
+	}
+
+	Pages = make(map[string]string)
+
 	pagePaths := directoryContentsHierarchy(PAGES_DIRECTORY)
 
 	baseTemplate := getBaseTemplate()
@@ -39,12 +45,8 @@ func init() {
 
 func getBaseTemplate() *template.Template {
 	templatePage, _ := ioutil.ReadFile("pages/" + BASE_TEMPLATE + ".html")
-
-	pageTemplate, _ := template.New("pageTemplate").Parse("")
 	
-	pageTemplate, _ = template.New("pageTemplate").Parse(string(templatePage))
-
-	// We dont care about erros here because if there's an error anywhere along the line the template will just revert to an empty template
+	pageTemplate, _ := template.New("pageTemplate").Parse(string(templatePage))
 
 	return pageTemplate
 }
@@ -64,7 +66,7 @@ func generatePages(paths []DirectoryStructure, parent *template.Template) {
 		pageText := buf.String()
 		Pages[path.url] = pageText
 
-		fmt.Printf("Rendered Page: %s\n", path)
+		fmt.Printf("Rendered Page: %s\n", path.url)
 
 		var newParentTemplate *template.Template
 		newParentTemplate, err = template.New("pageTemplate").Parse(pageText)
@@ -128,16 +130,18 @@ func loadStaticResource(filePath string, contextType string, required bool) Stat
 	return StaticResource{content, contextType}
 }
 
-func getStaticResources() (resources map[string]StaticResource) {
+func getStaticResources() (map[string]StaticResource) {
+	resources := make(map[string]StaticResource)
+
 	scripts := directoryContents(SCRIPTS_DIRECTORY)
 	images := directoryContents(IMAGES_DIRECTORY)
 
 	for _, scriptPath := range scripts {
-		resources[scriptPath] = loadStaticResource(scriptPath, JS_CONTEXT, true)
+		resources["static/" + scriptPath] = loadStaticResource(scriptPath, JS_CONTEXT, true)
 	}
 
 	for _, imagePath := range images {
-		resources[imagePath] = loadStaticResource(imagePath, JS_CONTEXT, true)
+		resources["static/" + imagePath] = loadStaticResource(imagePath, IMAGE_CONTEXT, true)
 	}
 
 	return resources
@@ -155,7 +159,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func showPage(w http.ResponseWriter, r *http.Request) {
-
 	path := r.URL.Path[1:]
 	splitUrl := strings.Split(path, "/")
 
@@ -167,9 +170,7 @@ func showPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if splitUrl[0] == "static" {
-		staticUrl := strings.Join(splitUrl[1:], "/")
-
-		if val, ok := Static[staticUrl]; ok {
+		if val, ok := Static[path]; ok {
 			w.Header().Set("content-type", val.dataType)
 
 			length, _ := w.Write(val.val)
@@ -180,6 +181,10 @@ func showPage(w http.ResponseWriter, r *http.Request) {
 
 	if len(splitUrl) > 1 {
 		path = strings.Join(splitUrl[:len(splitUrl)-1], "/")
+	}
+
+	if path[:len(path) - 1] != "/" {
+		path += "/"
 	}
 
 	if html, ok := Pages[path]; ok {

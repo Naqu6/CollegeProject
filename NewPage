@@ -4,6 +4,11 @@ if [ "$1" = "" ]
 		exit 1
 fi
 
+if [ ! -d "pages" ]
+	then
+		mkdir "pages"
+fi
+
 if [ ! -d "pages/$1" ]
 	then
 		mkdir "pages/$1"
