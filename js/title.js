@@ -1,0 +1,1 @@
+document.title = document.querySelector(".titleText").innerText

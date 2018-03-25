@@ -1,0 +1,34 @@
+<div class="header">
+	<div class="header-title" onclick="document.location='/queens/about/'">
+		Queen's University
+	</div>
+
+	<div class="header-content-wrapper">
+		<span class="header-content" onclick="document.location='/queens/apply/'">
+			Application
+		</span>
+
+		<span class="header-content" onclick="document.location='/queens/tuition/'">
+			Tuition and Aid
+		</span>
+
+		<span class="header-content" onclick="document.location='/queens/majors/'">
+			Majors
+		</span>
+
+	</div>
+</div>
+
+<div class="main-content">
+	<div class="content-header">
+		<center>{{.PageName}}</center>
+	</div>
+
+	<hr>
+
+	<center><img></center>
+
+	<div class="text">
+		{{.Html}}
+	</div>
+</div>

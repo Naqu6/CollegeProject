@@ -1,0 +1,1 @@
+window.onload = () => {document.querySelector("img").src = "/static/images/picture" + Math.floor((Math.random() * 6) + 1) + ".jpeg"}
